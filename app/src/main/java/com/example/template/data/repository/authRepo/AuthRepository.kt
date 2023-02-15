@@ -1,11 +1,6 @@
-package com.example.template.data.repository
+package com.example.template.data.repository.authRepo
 
 
-import com.example.template.model.LoginResponse
-
-import com.google.firebase.auth.PhoneAuthCredential
-import com.google.firebase.auth.PhoneAuthProvider
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 
 

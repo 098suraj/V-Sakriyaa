@@ -1,9 +1,8 @@
 package com.example.template.data.repository.authRepo
 
 
-import com.example.template.data.repository.AuthRepository
+import com.example.template.data.presistance.SettingsStore
 import com.example.template.data.repository.AuthService
-import com.example.template.data.repository.LoginState
 import com.example.template.model.VerifyOtp
 import com.google.firebase.auth.PhoneAuthProvider
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -13,6 +12,7 @@ import javax.inject.Inject
 
 class AuthRepositoryImpl @Inject constructor(
     private  val authService: AuthService,
+    private val store: SettingsStore
 ) : AuthRepository {
     private val TAG = "OTP"
 
@@ -58,6 +58,7 @@ class AuthRepositoryImpl @Inject constructor(
                response.body().let {
                    if (it != null) {
                        if (it.msg=="correct OTP"){
+                           store.setUserLoggedInStatus(true)
                           signUpState.value= LoginState.Success("Login Successful")
                        }else{
                            signUpState.value= LoginState.Error(it.msg)

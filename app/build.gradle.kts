@@ -1,3 +1,4 @@
+
 @Suppress("DSL_SCOPE_VIOLATION")
 plugins {
     alias(libs.plugins.android.application)
@@ -17,6 +18,7 @@ android {
         applicationId = "com.example.template"
         minSdk = 24
         targetSdk = 33
+        compileSdk=33
         versionCode = 1
         versionName = "1.0"
 
@@ -75,6 +77,9 @@ android {
 
 dependencies {
     //
+    implementation(libs.com.google.firebase.fcm)
+    //
+    implementation(libs.com.google.accompanist.permission)
     implementation(libs.com.google.accompanist)
     //materialIcon
     implementation(libs.androidx.compose.material)
@@ -99,6 +104,7 @@ dependencies {
     implementation(libs.androidx.navigation.compose)
     // Hilt Dependency Injection
     implementation(libs.hilt.android)
+    implementation("androidx.core:core-ktx:+")
     kapt(libs.hilt.compiler)
     // Hilt and instrumented tests.
     androidTestImplementation(libs.hilt.android.testing)

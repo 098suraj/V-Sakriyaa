@@ -1,4 +1,4 @@
-package com.shssolutionssolar.app.utils.constants
+package com.example.template.utils.constants
 
 import androidx.datastore.preferences.core.booleanPreferencesKey
 

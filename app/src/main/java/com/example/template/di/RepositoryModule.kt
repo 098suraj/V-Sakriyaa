@@ -1,7 +1,7 @@
 package com.example.template.di
 
 
-import com.example.template.data.repository.AuthRepository
+import com.example.template.data.repository.authRepo.AuthRepository
 import com.example.template.data.repository.authRepo.AuthRepositoryImpl
 
 import dagger.Binds

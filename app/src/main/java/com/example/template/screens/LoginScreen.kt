@@ -1,5 +1,7 @@
 package com.example.template.screens
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -16,21 +18,35 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
+import com.example.template.screens.components.bottomNav.BottomNavItem
+import com.example.template.screens.components.bottomNav.Screen
+import com.google.accompanist.permissions.ExperimentalPermissionsApi
+import com.google.accompanist.permissions.PermissionStatus
+import com.google.accompanist.permissions.rememberPermissionState
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
-@OptIn(ExperimentalMaterial3Api::class)
+@RequiresApi(Build.VERSION_CODES.TIRAMISU)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalPermissionsApi::class)
 @Composable
-fun Login() {
+fun Login(navController: NavController) {
     var userName by remember { mutableStateOf("") }
-
+    val scope = rememberCoroutineScope()
+    val permissionState = rememberPermissionState(permission = android.Manifest.permission.POST_NOTIFICATIONS)
+    LaunchedEffect(key1 = Unit){
+        permissionState.launchPermissionRequest()
+    }
     Column(
         modifier = Modifier
             .padding(horizontal = 25.dp, vertical = 25.dp)
@@ -40,7 +56,7 @@ fun Login() {
         verticalArrangement = Arrangement.SpaceAround
     ) {
         Text(
-            text = "Welcome to App",
+            text = "Welcome to V-सक्रिय",
             style = MaterialTheme.typography.titleLarge
         )
 
@@ -68,7 +84,20 @@ fun Login() {
                 modifier = Modifier
                     .height(50.dp)
                     .fillMaxWidth(),
-                onClick = { /*TODO*/ },
+                onClick = {
+                    when(permissionState.status){
+                        is PermissionStatus.Denied -> {
+
+                        }
+                        PermissionStatus.Granted -> {
+                            scope.launch {
+                                delay(2000)
+                                navController.navigate(Screen.OtpScreen.route)
+                            }
+                        }
+                    }
+
+                },
                 colors = ButtonDefaults.buttonColors(
                     contentColor = MaterialTheme.colorScheme.onPrimary,
                     containerColor = MaterialTheme.colorScheme.primary
@@ -82,8 +111,3 @@ fun Login() {
     }
 }
 
-@Preview(showBackground = true)
-@Composable
-fun LoginPreview() {
-    Login()
-}

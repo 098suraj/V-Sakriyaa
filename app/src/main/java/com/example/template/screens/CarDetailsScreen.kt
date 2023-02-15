@@ -1,5 +1,6 @@
 package com.example.template.screens
 
+import android.widget.Toast
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -12,7 +13,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -20,36 +20,39 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.material3.surfaceColorAtElevation
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavHostController
 import coil.compose.SubcomposeAsyncImage
 import com.example.template.model.CarDetailsResponse
+import com.example.template.screens.components.bottomNav.Screen
 import com.example.template.viewModel.CarDetailsViewModel
 import com.example.template.viewModel.CarsDetailsState
 
 @Composable
-fun CarDetailsScreen(paddingValues: PaddingValues) {
+fun CarDetailsScreen(navController: NavHostController, paddingValues: PaddingValues) {
     val viewModel = hiltViewModel<CarDetailsViewModel>()
+    val context = LocalContext.current
     LaunchedEffect(key1 = Unit) {
         viewModel.getCarDetails()
+
     }
     val data = viewModel.getDetails.collectAsState().value
-    val imagurl = viewModel.imageUrl.value
+    val imageUrl = viewModel.imageUrl.value
 
     Column(
         Modifier
             .padding(paddingValues)
             .fillMaxSize()
+
             .padding(20.dp)
     ) {
         when (data) {
@@ -58,22 +61,22 @@ fun CarDetailsScreen(paddingValues: PaddingValues) {
             CarsDetailsState.Loading -> {}
             is CarsDetailsState.Success -> {
                 val carDetails = data.policeData as CarDetailsResponse
-                Column(modifier = Modifier.fillMaxSize(),) {
+                Column(modifier = Modifier.fillMaxSize(), horizontalAlignment = Alignment.Start) {
                     SubcomposeAsyncImage(
                         modifier = Modifier
                             .height(200.dp)
                             .fillMaxWidth(),
                         contentScale = ContentScale.FillBounds,
-                        model = imagurl,
+                        model = imageUrl,
                         loading = {
-                            Box(modifier =Modifier.height(200.dp)){
+                            Box(modifier = Modifier.height(200.dp)) {
                                 CircularProgressIndicator(Modifier.align(Alignment.Center))
                             }
 
                         },
                         contentDescription = null
                     )
-                    Spacer(modifier = Modifier.height(3.dp))
+                    Spacer(modifier = Modifier.height(10.dp))
                     CarDetailsTile(carDetails)
                     Spacer(modifier = Modifier.height(5.dp))
                     Button(
@@ -84,7 +87,7 @@ fun CarDetailsScreen(paddingValues: PaddingValues) {
                         colors = ButtonDefaults.buttonColors(
                             containerColor = MaterialTheme.colorScheme.secondary,
                         ),
-                        onClick = { /*TODO*/ }) {
+                        onClick = { navController.navigate(Screen.TrackingDetailsScreen.route) }) {
                         Text(
                             text = "View Tracking Details",
                             style = MaterialTheme.typography.bodyMedium,
@@ -95,7 +98,7 @@ fun CarDetailsScreen(paddingValues: PaddingValues) {
                     Spacer(modifier = Modifier.height(15.dp))
                     Text(
                         text = "Lost Diary Details",
-                        style = MaterialTheme.typography.labelMedium,
+                        style = MaterialTheme.typography.bodyLarge,
                         color = MaterialTheme.colorScheme.onSurface,
                         textAlign = TextAlign.Center
                     )
@@ -103,22 +106,30 @@ fun CarDetailsScreen(paddingValues: PaddingValues) {
                     LostDiaryDetailsTile(carDetails = carDetails)
                     Text(
                         text = "Car Owner Details",
-                        style = MaterialTheme.typography.labelMedium,
+                        style = MaterialTheme.typography.bodyLarge,
                         color = MaterialTheme.colorScheme.onSurface,
                         textAlign = TextAlign.Center
                     )
                     Spacer(modifier = Modifier.height(10.dp))
                     CarOwnerDetails(carDetails = carDetails)
                     Spacer(modifier = Modifier.height(10.dp))
-                    Button(  modifier = Modifier
+                    Button(modifier = Modifier
                         .fillMaxWidth()
                         .height(70.dp)
                         .padding(10.dp),
                         colors = ButtonDefaults.buttonColors(
                             containerColor = MaterialTheme.colorScheme.secondary,
                             contentColor = MaterialTheme.colorScheme.onSurface
-                        ),onClick = { /*TODO*/ }) {
-
+                        ), onClick = {
+                            Toast.makeText(context, "Car Marked as Found", Toast.LENGTH_SHORT)
+                                .show()
+                        }) {
+                        Text(
+                            text = "Mark Car as Found",
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.onSecondary,
+                            textAlign = TextAlign.Center
+                        )
                     }
                 }
             }
@@ -135,7 +146,7 @@ fun LostDiaryDetailsTile(carDetails: CarDetailsResponse) {
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.tertiaryContainer),
         modifier = Modifier
             .padding(5.dp)
-            .height(60.dp)
+            .height(80.dp)
             .fillMaxWidth(),
 
         elevation = CardDefaults.cardElevation(4.dp),
@@ -173,7 +184,6 @@ fun LostDiaryDetailsTile(carDetails: CarDetailsResponse) {
 }
 
 
-
 @Composable
 fun CarOwnerDetails(carDetails: CarDetailsResponse) {
     Card(
@@ -181,7 +191,7 @@ fun CarOwnerDetails(carDetails: CarDetailsResponse) {
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.tertiaryContainer),
         modifier = Modifier
             .padding(5.dp)
-            .wrapContentHeight()
+            .height(80.dp)
             .fillMaxWidth(),
 
         elevation = CardDefaults.cardElevation(4.dp),

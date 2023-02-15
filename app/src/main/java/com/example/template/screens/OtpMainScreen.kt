@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -15,7 +16,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.style.TextAlign
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.example.template.data.repository.LoginState
+import com.example.template.data.repository.authRepo.LoginState
 import com.example.template.screens.components.otpScreens.EnterCodeUI
 import com.example.template.screens.components.otpScreens.ErrorUi
 import com.example.template.viewModel.OtpViewModel
@@ -30,7 +31,7 @@ fun PhoneLoginUI(
     val context = LocalContext.current
 
     // Sign up state
-    val uiState by viewModel.signUpState.collectAsState(initial =LoginState.NotInitialized)
+    val uiState by viewModel.signUpState.collectAsState(initial = LoginState.NotInitialized)
 
     // SMS code
     val code by viewModel.code.collectAsState(initial = "")
@@ -43,7 +44,10 @@ fun PhoneLoginUI(
     when (uiState) {
         // Nothing happening yet
         is LoginState.NotInitialized -> {
-            viewModel.authenticatePhone()
+            LaunchedEffect(key1 = Unit ){
+                viewModel.authenticatePhone()
+            }
+
         }
 
         // State loading
@@ -93,10 +97,14 @@ fun PhoneLoginUI(
 
         // You can navigate when the auth process is successful
         is LoginState.Success -> {
-            Timber.tag("Code").d("The Sign in was successful")
-            popUpScreen()
+            LaunchedEffect(key1 = Unit ){
+                Timber.tag("Code").d("The Sign in was successful")
+                popUpScreen()
+            }
+
         }
 
+        else -> {}
     }
 
 

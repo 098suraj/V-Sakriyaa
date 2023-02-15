@@ -1,8 +1,11 @@
 package com.example.template.viewModel
 
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.template.data.repository.AuthService
+import com.example.template.model.CarDetailsResponse
 import com.example.template.model.stolenCarDetails
 import com.example.template.utils.DispatcherProvider
 import com.google.firebase.database.DataSnapshot
@@ -25,7 +28,6 @@ class StolenCarDetailsViewModel @Inject constructor(
 ) : ViewModel() {
     private val _stolenCarDetailsResponse = MutableStateFlow<StolenCarState>(StolenCarState.Empty)
     var stolenCarDetailsResponse = _stolenCarDetailsResponse.asStateFlow()
-
     private val _stolenCarDetailsApi = MutableStateFlow<StolenCarState>(StolenCarState.Empty)
     var stolenCarDetailsApi = _stolenCarDetailsApi.asStateFlow()
 

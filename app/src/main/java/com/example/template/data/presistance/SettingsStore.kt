@@ -1,9 +1,9 @@
-package com.shssolutionssolar.app.data.presistance
+package com.example.template.data.presistance
 
 import android.content.Context
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.preferencesDataStore
-import com.shssolutionssolar.app.utils.constants.SettingsStoreKeys
+import com.example.template.utils.constants.SettingsStoreKeys
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map

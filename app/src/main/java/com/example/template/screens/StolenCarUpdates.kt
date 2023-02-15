@@ -1,6 +1,7 @@
 package com.example.template.screens
 
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
@@ -20,24 +21,24 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.compose.ExperimentalLifecycleComposeApi
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.navigation.NavController
 import com.example.template.model.CarResponce
+import com.example.template.screens.components.bottomNav.Screen
+import com.example.template.utils.constants.Constants
 import com.example.template.viewModel.StolenCarDetailsViewModel
 import com.example.template.viewModel.StolenCarState
-import timber.log.Timber
 import java.text.SimpleDateFormat
 
-@OptIn(ExperimentalLifecycleComposeApi::class)
 @Composable
-fun StolenCarUpdatesScreen(paddingValues: PaddingValues) {
+fun StolenCarUpdatesScreen(navController: NavController, paddingValues: PaddingValues) {
     var viewModel = hiltViewModel<StolenCarDetailsViewModel>()
+
     LaunchedEffect(key1 = Unit) {
-        viewModel.getCarDetails()
         viewModel.getCarDetailsApi()
     }
-//    val data = viewModel.stolenCarDetailsResponse.collectAsStateWithLifecycle().value
-    val data= viewModel.stolenCarDetailsApi.collectAsStateWithLifecycle().value
+
+    val data = viewModel.stolenCarDetailsApi.collectAsStateWithLifecycle().value
     Column(
         Modifier
             .padding(paddingValues)
@@ -56,12 +57,12 @@ fun StolenCarUpdatesScreen(paddingValues: PaddingValues) {
             StolenCarState.Error -> {}
             StolenCarState.Loading -> {}
             is StolenCarState.Success -> {
-                val  carResponce = data.policeData as CarResponce
+                val carResponce = data.policeData as CarResponce
 
                 LazyColumn(
                     content = {
                         items(carResponce.data) {
-                            CarDetailsList(it.missingDetails)
+                            CarDetailsList(it,navController)
                         }
                     })
             }
@@ -73,11 +74,14 @@ fun StolenCarUpdatesScreen(paddingValues: PaddingValues) {
 
 
 @Composable
-fun CarDetailsList(policeData: CarResponce.Data.MissingDetails) {
+fun CarDetailsList(policeData: CarResponce.Data, navController: NavController) {
     Card(
         border = BorderStroke(1.dp, MaterialTheme.colorScheme.secondary),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.tertiaryContainer),
         modifier = Modifier
+            .clickable {
+                Constants.carNumber=policeData.id
+                navController.navigate(Screen.CarDetailsScreen.route) }
             .padding(5.dp)
             .wrapContentHeight()
             .fillMaxWidth(),
@@ -87,13 +91,15 @@ fun CarDetailsList(policeData: CarResponce.Data.MissingDetails) {
             Column(
                 Modifier
                     .fillMaxSize()
-                    .padding(10.dp),) {
+                    .padding(10.dp),
+            ) {
                 Text(
-                    text = policeData.carNumber, style = MaterialTheme.typography.bodyLarge,
+                    text = policeData.missingDetails.carNumber, style = MaterialTheme.typography.bodyLarge,
                     color = MaterialTheme.colorScheme.onSurface
                 )
                 Text(
-                    text = "Spotted car at 📌 ${policeData.place} ${getData(policeData.time)} registered by ${policeData.policeStation} ", style = MaterialTheme.typography.bodyLarge,
+                    text = "Spotted car at 📌 ${policeData.missingDetails.place} ${getData(policeData.missingDetails.time)} registered by ${policeData.missingDetails.policeStation} ",
+                    style = MaterialTheme.typography.bodyLarge,
                     color = MaterialTheme.colorScheme.onSurface
                 )
             }
